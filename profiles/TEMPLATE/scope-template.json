@@ -3,10 +3,16 @@
 
   "profile": "<PROFILE-NAME>",
   "workstream": "<WS-id-short-slug>",
+  "targetRepo": "<absolute path to the repo the Builder executes in; omit only if the work targets AgenticTeam itself. All globs below are relative to this root>",
+  "targetRepoRemote": "<remote URL of the target repo, if any>",
   "objective": "<one-paragraph objective>",
   "ratifiedBy": "steward",
   "ratifiedDate": "<YYYY-MM-DD>",
   "humanApproval": "<who approved, where>",
+
+  "preconditions": [
+    "<state that must hold BEFORE the Builder starts: which branch to start from, what must have landed, what must be ratified. The Builder verifies these first and stops if unmet>"
+  ],
 
   "nonGoals": [
     "<explicitly out of scope>"

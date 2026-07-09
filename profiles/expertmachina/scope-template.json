@@ -1,53 +1,92 @@
 {
-  "$comment": "ExpertMachina scope seed. The Steward copies this to handoffs/current-scope.json when ratifying an ExpertMachina workstream, fills every <PLACEHOLDER>, and may tighten — never weaken — the pre-filled policy fields. forbiddenGlobs and the three profile proofs below are standing policy from CLAUDE.profile.md; adjust glob paths to the actual repo layout when the project tree is known.",
+  "$comment": "ExpertMachina scope seed, corrected against the REAL repo layout (validated 2026-07-09 via the first profile-mode scoping pass, WS-finance-cost-leakage-workbench). The Steward copies this to handoffs/current-scope.json, fills every <PLACEHOLDER>, and may tighten — never weaken — the pre-filled policy fields. All globs are relative to targetRepo. Standing forbiddenGlobs and the constitutional proofs below mirror CLAUDE.profile.md.",
 
   "profile": "expertmachina",
   "workstream": "<WS-id-short-slug>",
-  "objective": "<one-paragraph objective>",
+  "targetRepo": "C:/Users/Robert/ExpertMachina",
+  "targetRepoRemote": "https://github.com/rokorobot/ExpertMachina",
+  "objective": "<one-paragraph objective. For a new workbench: name the domain_key, the diagnostic value, and confirm it follows the Workbench Catalog v1 bundle pattern>",
   "ratifiedBy": "steward",
   "ratifiedDate": "<YYYY-MM-DD>",
-  "humanApproval": "<who approved, where>",
+  "humanApproval": "PENDING — Builder must not start until a human replaces this value with who/where approval was given",
+
+  "preconditions": [
+    "Builder starts from a fresh branch off main — verify main is the checked-out base and no unrelated test/feature branch is active",
+    "For workbench work: all skill contracts the workbench declares must be ratified ACTIVE before the runner will accept them (Catalog v1 convention)",
+    "<workstream-specific preconditions>"
+  ],
 
   "nonGoals": [
-    "No changes to the governance/approval pipeline",
-    "No new fact approval states",
+    "No changes to the governed backend (backend/app/**) — no new endpoints, projection types, connectors, policy, identity, or ledger logic",
+    "No changes to the MCP gateway or backend/mcp_server.py",
+    "No new fact approval states, evidence classes, or clearance levels",
+    "No vault writes and no changes to the untouchable floor (vault 00_system, 07_agent_workspaces, 08_proposals)",
+    "No compile-gate or permanent-guard modifications",
+    "No real customer data in any corpus — synthetic/example documents only",
     "<workstream-specific non-goals>"
   ],
 
   "allowedGlobs": [
-    "<narrow workstream paths, e.g. src/workbench/<feature>/**>",
-    "<matching test paths>"
+    "workbench/<domain_key>/**",
+    "backend/test_<domain_key>_corpus.py",
+    "backend/test_<domain_key>_acceptance.py",
+    "docs/workbench-<domain_key>.md"
   ],
 
   "forbiddenGlobs": [
-    "src/governance/**",
-    "src/audit-ledger/**",
+    "backend/app/**",
+    "backend/mcp_server.py",
+    "backend/harness/**",
+    "vault/**",
+    "expert_machina.db",
+    "backend/expert_machina.db",
+    "qdrant_db/**",
+    "backend/app/qdrant_db/**",
+    "uploads/**",
+    "frontend/**",
     "**/*.env*",
     ".claude/**",
-    "handoffs/*.md",
-    "profiles/**"
+    ".github/**",
+    "workbench/compliance_obligation/**",
+    "workbench/customer_operations/**",
+    "workbench/onboarding_diagnostic.py"
   ],
+  "$commentForbidden": "backend/app/** is the governed core (ledger, policy, identity, proposals, projections engine). Existing workbenches are each other's forbidden territory — a new workbench never edits a shipped one. When a NEW workbench ships, add its path to this standing list.",
+
+  "projectionOnlyRule": "The workbench consumes ONLY the existing doors: .empkg packages via the package channel and MCP path/neighbor/subgraph queries at a real AGENT token's clearance. It never reads backend internals, the ledger, or raw stores directly. Data with no existing projection/package door = BLOCKED finding for the Steward, never a reason to reach deeper.",
+
+  "canonicalMutationPolicy": "Zero direct canonical writes — constitutional, not configurable (D29 One-Way Valve). Findings re-enter exclusively through the proposal lane (vault 08_proposals -> PROPOSAL-lane connector -> CANDIDATE -> human gate -> DERIVED fact). Proposal-lane candidates are never auto-approved. The fifth permanent guard must still prove from the ledger alone that no agent principal wrote canonical facts.",
 
   "proofRequirements": [
     {
+      "id": "corpus",
+      "command": "backend/.venv/Scripts/python.exe -m pytest backend/test_<domain_key>_corpus.py -q",
+      "mustShow": "corpus documents load, skill contracts parse and are ACTIVE, workbench.yaml is catalog-valid"
+    },
+    {
+      "id": "acceptance",
+      "command": "backend/.venv/Scripts/python.exe -m pytest backend/test_<domain_key>_acceptance.py -q",
+      "mustShow": "each declared skill produces evidence-cited findings on the seeded corpus; refusal-first on unsupported questions (profile rule 1)"
+    },
+    {
       "id": "empty-evidence-state",
-      "command": "<test command for the touched surface's no-evidence state>",
-      "mustShow": "explicit 'no governed evidence available' rendering; no fabricated fields (profile rule 1)"
+      "command": "backend/.venv/Scripts/python.exe -m pytest backend/test_<domain_key>_acceptance.py -q -k refusal",
+      "mustShow": "explicit refusal/no-evidence output when the corpus lacks support — never fabricated findings; at least one such case per skill contract (profile rule 1)"
     },
     {
       "id": "no-canonical-write",
-      "command": "<test or static check command>",
-      "mustShow": "no write path from workbench/feature code to canonical state (profile rules 3-4)"
+      "command": "backend/.venv/Scripts/python.exe -m pytest backend/test_agent_authorship_guard.py -q",
+      "mustShow": "the existing fifth permanent guard still proves from the ledger alone that no agent principal wrote canonical facts (profile rules 3-5, D29)"
     },
     {
       "id": "permission-scope",
-      "command": "<permission filtering test command>",
-      "mustShow": "scope-filtered results plus at least one denied-access case (profile rule 7)"
+      "command": "backend/.venv/Scripts/python.exe -m pytest backend/test_authorization.py backend/test_<domain_key>_acceptance.py -q -k denied",
+      "mustShow": "clearance filtering intact plus the workbench's denied-access case: explicit refusal under insufficient clearance (profile rule 7)"
     },
     {
-      "id": "workstream-proofs",
-      "command": "<workstream-specific test command(s)>",
-      "mustShow": "<what the literal output must demonstrate>"
+      "id": "full-regression",
+      "command": "backend/.venv/Scripts/python.exe -m pytest backend -q",
+      "mustShow": "no regressions vs a baseline run recorded BEFORE the first Builder edit (baseline output pasted in Builder handoff)"
     }
   ],
 
@@ -56,21 +95,24 @@
     "verifiers": 4,
     "passThreshold": 3,
     "lenses": ["correctness", "scope-adherence", "provenance-and-evidence", "permission-leakage"],
-    "$comment": "See profiles/expertmachina/workflows/evidence-gate.md for the lens briefs."
+    "$comment": "See profiles/expertmachina/workflows/evidence-gate.md. A provenance or permission fail is never waivable by vote count — it escalates to a human."
   },
 
-  "rollbackAnchor": "<git tag/branch created before first Builder edit>",
+  "rollbackAnchor": "git tag ws-<domain_key>-baseline on the Builder's branch, created before the first edit",
 
   "stopConditions": [
-    "Builder stops when proofs run and handoff is written; does not merge",
-    "Sweeper stops if baseline suite is red",
+    "Builder verifies preconditions first and stops if unmet",
+    "Builder stops when all proofs have run with literal evidence and the handoff (incl. profile addendum A1-A5) is written; does not merge",
+    "Builder stops immediately if any needed data lacks an existing projection/package door (BLOCKED finding to Steward)",
+    "Sweeper stops if the baseline suite is red",
     "Any agent stops immediately if work requires editing a forbiddenGlob",
-    "Any agent stops immediately upon finding an existing write path from workbench code to canonical state (critical defect, report to human)"
+    "Any agent stops immediately upon finding a write path from workbench code to canonical state (critical defect, straight to human)"
   ],
 
   "downstreamPlan": [
-    { "part": "<part>", "agent": "builder", "model": "opus" },
+    { "part": "workbench bundle: workbench.yaml, ratified skill contracts, synthetic corpus, acceptance runner (customer_operations as reference)", "agent": "builder", "model": "opus" },
+    { "part": "corpus + acceptance tests incl. refusal and denied-access cases", "agent": "builder", "model": "opus" },
     { "part": "post-build cleanup", "agent": "sweeper", "model": "sonnet" },
-    { "part": "evidence gate", "agent": "steward", "model": "fable" }
+    { "part": "evidence gate (4 lenses)", "agent": "steward", "model": "fable" }
   ]
 }

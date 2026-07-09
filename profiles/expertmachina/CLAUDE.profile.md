@@ -12,11 +12,29 @@ task prompt. Nothing here grants authority the core denies.
   decide on top of that canonical layer. The product's value IS the
   trustworthiness of the layer — an ungoverned answer is not a smaller
   feature, it is a broken product.
-- **Terminology:** *canonical state* = the approved fact store;
-  *governed fact* = a fact with source, ingestion date, and approval state;
-  *projection* = a read-only view derived from canonical state;
-  *workbench* = a user-facing surface built on projections;
-  *evidence* = governed facts cited with provenance.
+- **Terminology:** *canonical state* = the approved fact store (governed
+  backend ledger); *governed fact* = a fact with source, ingestion date,
+  and approval state; *projection* = a governed, clearance-filtered lens
+  over the knowledge system — never another knowledge system; *evidence* =
+  governed facts cited with provenance; *the doors* = the only sanctioned
+  consumption paths: .empkg packages and MCP queries at a real AGENT
+  token's clearance; *proposal lane* = the One-Way Valve (D29) re-entry
+  path (vault `08_proposals` → PROPOSAL-lane connector → CANDIDATE → human
+  gate → DERIVED fact).
+- **Workbench (Catalog v1):** a workbench is a **bundle of declared skill
+  contracts, never a vague agent** — `workbench/<domain_key>/` containing
+  `workbench.yaml`, ratified skill contracts (`skills/*.yaml`; non-ACTIVE
+  contracts are refused by the runner), a synthetic corpus (`corpus/`,
+  seeded via `corpus_seed/`), and an acceptance runner (`runner.py`) that
+  is refusal-first and evidence-driven. Reference implementation:
+  `workbench/customer_operations/`.
+- **Execution context:** ExpertMachina workstreams are SCOPED from
+  AgenticTeam but EXECUTED in the target repo declared by the scope
+  contract's `targetRepo` field (normally
+  `C:/Users/Robert/ExpertMachina`). The Builder verifies the contract's
+  `preconditions` — including branching from `main` — before its first
+  edit, and stops if they don't hold. Handoffs and gate records live in
+  AgenticTeam.
 - **Primary risks:** fabricated or unapproved facts presented as governed;
   silent mutation of canonical state; permission leakage across user
   scopes; audit gaps that make answers untraceable; accidental
@@ -69,24 +87,42 @@ task prompt. Nothing here grants authority the core denies.
 
 ## Standing boundaries
 
-Mirrored in `scope-template.json` `forbiddenGlobs` so the scope-guard hook
-enforces them mechanically on every workstream:
+Real paths in the target repo (validated against the actual tree,
+2026-07-09), mirrored in `scope-template.json` `forbiddenGlobs` so the
+scope-guard hook enforces them mechanically on every workstream:
 
-- Never edit: `src/governance/**`, `src/audit-ledger/**` (governed process
+- Never edit from workbench workstreams: `backend/app/**` (the governed
+  core — ledger, policy, identity, proposals, projections engine),
+  `backend/mcp_server.py`, `backend/harness/**`, `vault/**` (including the
+  untouchable floor `00_system` / `07_agent_workspaces` / `08_proposals`),
+  the databases (`expert_machina.db`, `qdrant_db/**`), `uploads/**`,
+  `frontend/**`, `.claude/**`, `.github/**`, env files. Governed-backend
   changes are their own Steward-ratified workstreams with their own review
-  bar — never a side effect of workbench work).
-- Touch only via governed process: canonical-state schemas and approval
-  workflows.
+  bar — never a side effect of workbench work.
+- Shipped workbenches are each other's forbidden territory: a new
+  workbench never edits `workbench/compliance_obligation/**`,
+  `workbench/customer_operations/**`, or any later catalog entry. When a
+  new workbench ships, its path joins this standing list.
+- Touch only via governed process: canonical-state schemas, approval
+  workflows, compile gates, and permanent guards.
 
 ## Proof obligations (every workstream)
 
-- **Empty-evidence state test:** literal test output proving the touched
-  surface renders an explicit no-evidence state rather than fabricating.
-- **No-canonical-write check:** evidence (test or static check) that the
-  diff introduces no write path from workbench/feature code to canonical
-  state.
-- **Permission-scope test:** evidence that touched queries/projections
-  filter by permission scope, including at least one denied-access case.
+The target repo already carries constitutional tests — profile proofs
+REUSE them rather than inventing parallel checks:
+
+- **Refusal-first / empty-evidence test:** literal test output proving the
+  touched surface refuses explicitly when the corpus lacks support, never
+  fabricating findings (at least one refusal case per skill contract).
+- **No-canonical-write check:** `backend/test_agent_authorship_guard.py`
+  (the fifth permanent guard) must still prove from the ledger alone that
+  no agent principal wrote canonical facts.
+- **Permission-scope test:** `backend/test_authorization.py` intact, plus
+  a workstream-specific denied-access case proving explicit refusal (not
+  silent omission) under insufficient clearance.
+- **Compile-gate neutrality:** `backend/test_compile_gates.py` and all
+  permanent guards pass unchanged — a workstream may add gates via its own
+  governed process, never weaken existing ones.
 
 ## Positioning and communication rules
 

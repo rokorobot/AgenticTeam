@@ -9,21 +9,33 @@ failure routing. Only the deltas are listed here.
 
 **Scope phase (Steward):**
 - Seed `handoffs/current-scope.json` from
-  `profiles/expertmachina/scope-template.json`, not from scratch.
-- Ratification must answer two profile questions explicitly: *which
-  projections does this workbench read* (rule 4 — if a needed projection
-  doesn't exist, defining it is scoped as its own part), and *which
-  governed facts does it depend on* (rule 1 — a workbench over facts that
-  aren't yet governed is scoped as blocked, not built speculatively).
+  `profiles/expertmachina/scope-template.json`, not from scratch — it
+  carries the validated real-repo `forbiddenGlobs`, `targetRepo`, and
+  constitutional proofs.
+- A workbench is a Catalog v1 bundle: `workbench/<domain_key>/` with
+  `workbench.yaml`, ratified skill contracts, synthetic corpus, and an
+  acceptance runner. Ratification must answer two profile questions
+  explicitly: *which doors does this workbench consume* (rule 4 — .empkg
+  and/or MCP; a data need with no existing door is scoped as its own
+  governed-backend workstream, never satisfied by reaching deeper), and
+  *which governed facts does it depend on* (rule 1 — a workbench over
+  facts that aren't yet governed is scoped as blocked, not built
+  speculatively).
+- Ratify the skill contracts themselves: which diagnostics ship, each as a
+  declared `skills/*.yaml` contract (non-ACTIVE contracts are refused by
+  the runner).
 
 **Build phase (Builder):**
-- Read `profiles/expertmachina/CLAUDE.profile.md` before the first edit.
-- The empty-evidence state is built FIRST, not last: the workbench must
-  render its honest "no governed evidence available" state before any
-  happy-path rendering exists. This ordering makes rule 1 structural
-  rather than a retrofitted check.
-- Provenance fields (source, ingestion date, approval state) are part of
-  the data contract from the first commit, not a later enrichment.
+- Verify the contract's `preconditions` (branch off main, ACTIVE skill
+  contracts) before the first edit; execute inside `targetRepo`.
+- Read `profiles/expertmachina/CLAUDE.profile.md` before the first edit;
+  use `workbench/customer_operations/` as the reference bundle.
+- Refusal-first is built FIRST, not last: the runner must produce its
+  honest "no governed evidence available" refusal before any happy-path
+  finding exists. This ordering makes rule 1 structural rather than a
+  retrofitted check.
+- Evidence citations (source, ingestion date, approval state) are part of
+  every finding's contract from the first commit, not a later enrichment.
 
 **Sweep phase (Sweeper):** unchanged, plus one addition to the
 behavior-preservation contract: provenance display and permission

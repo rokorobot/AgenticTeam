@@ -40,6 +40,25 @@ on every agent working that workstream must read
 `profiles/<name>/CLAUDE.profile.md` first and complete the profile's
 handoff addendum in its handoffs. No profile field = core-only mode.
 
+## External target repos
+
+AgenticTeam and the project it governs usually live in DIFFERENT
+repositories. The scope contract carries a `targetRepo` field (absolute
+path, plus optional `targetRepoRemote`): all allowed/forbidden globs are
+relative to that root, and the Builder/Sweeper execute INSIDE the target
+repo — while scope contracts, handoffs, and gate records stay here in
+AgenticTeam as the durable governance ledger.
+
+Two rules make this safe:
+
+- **The Steward scopes from here; the Builder executes there.** Scoping
+  reads the real target tree (never guesses globs from convention) and
+  records `preconditions` — which branch to start from, what must have
+  landed first. The Builder verifies preconditions before its first edit
+  and stops if they don't hold.
+- **Omitting `targetRepo` means the work targets AgenticTeam itself** —
+  the only case where globs are relative to this repo.
+
 ## Starting a new workstream from a profile
 
 1. **Select profile** — decide which project this workstream belongs to.
