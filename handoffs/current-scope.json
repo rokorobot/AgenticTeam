@@ -1,0 +1,138 @@
+{
+  "$comment": "First profile-mode scope contract. Seeded from profiles/expertmachina/scope-template.json, tightened against the ACTUAL ExpertMachina repo layout (inspected 2026-07-09). Globs are relative to targetRepo, not to AgenticTeam. SCOPING-ONLY pass: no Builder work is authorized until a human ratifies this contract.",
+
+  "profile": "expertmachina",
+  "workstream": "WS-finance-cost-leakage-workbench",
+  "targetRepo": "C:/Users/Robert/ExpertMachina",
+  "targetRepoRemote": "https://github.com/rokorobot/ExpertMachina",
+
+  "objective": "Create the Finance & Cost Leakage Workbench as the second commercial entry in Workbench Catalog v1: a governed bundle of declared skill contracts (workbench.yaml + skills/*.yaml + corpus + runner) that diagnoses cost leakage signals (duplicate/overlapping spend, contract-vs-invoice drift, unowned recurring costs, missing approval evidence, stale vendor terms) over a governed finance corpus. It follows the customer_operations pattern exactly: a consumer OUTSIDE the governed backend, using only existing doors (.empkg packages + MCP at a real AGENT token's clearance), with findings re-entering canon ONLY through the proposal lane (D29 One-Way Valve).",
+
+  "ratifiedBy": "steward",
+  "ratifiedDate": "2026-07-09",
+  "humanApproval": "RATIFIED by Robert (robertkonecny@gmail.com) on 2026-07-09, in session: five skill contracts ratified with standing diagnostic-only policy, and branch precondition confirmed. Ratification record: handoffs/2026-07-09-ws-finance-cost-leakage-ratification.md",
+
+  "skillContracts": {
+    "$comment": "Ratified 2026-07-09. These five are the declared bundle; the Builder implements exactly these as skills/*.yaml contracts, no additions without re-scoping.",
+    "ratified": [
+      { "key": "duplicate_spend_detection", "purpose": "Finds likely duplicate invoices, payments, vendor charges, or recurring expenses." },
+      { "key": "contract_invoice_drift", "purpose": "Compares approved contract terms against invoice/payment evidence and flags mismatches." },
+      { "key": "unowned_recurring_costs", "purpose": "Finds recurring subscriptions, vendors, tools, or services with unclear owner, approver, or business purpose." },
+      { "key": "missing_approval_evidence", "purpose": "Flags spend items where approval evidence is absent, stale, incomplete, or inaccessible." },
+      { "key": "stale_vendor_terms", "purpose": "Detects vendor contracts, pricing, renewal terms, or obligations that appear outdated or no longer aligned with current spend." }
+    ],
+    "standingPolicy": "These skills produce diagnostic findings only. They do not mutate canonical facts, vendor records, contracts, invoices, approvals, or audit state. Any suggested correction re-enters through the governed proposal lane."
+  },
+
+  "preconditions": [
+    "Builder may start only from up-to-date main after test/resurrect-golden-path-e2e lands or is explicitly abandoned/merged away — never on top of the test branch.",
+    "All five ratified skill contracts must be authored as skills/*.yaml and ACTIVE per Catalog v1 convention before the runner will accept them (non-ACTIVE contracts refused)."
+  ],
+
+  "nonGoals": [
+    "No changes to the governed backend (backend/app/**) — no new endpoints, projection types, connectors, policy, identity, or ledger logic",
+    "No changes to the MCP gateway or mcp_server.py",
+    "No new fact approval states, evidence classes, or clearance levels",
+    "No vault writes and no changes to vault managed folders or the proposal-lane floor (00_system, 07_agent_workspaces, 08_proposals)",
+    "No frontend changes in this workstream",
+    "No compile-gate or permanent-guard modifications",
+    "No real customer financial data in the corpus — synthetic/example finance documents only, following the compliance_obligation corpus pattern"
+  ],
+
+  "allowedGlobs": [
+    "workbench/finance_cost_leakage/**",
+    "backend/test_finance_cost_leakage_corpus.py",
+    "backend/test_finance_cost_leakage_acceptance.py",
+    "docs/workbench-finance-cost-leakage.md"
+  ],
+
+  "forbiddenGlobs": [
+    "backend/app/**",
+    "backend/mcp_server.py",
+    "backend/harness/**",
+    "vault/**",
+    "expert_machina.db",
+    "backend/expert_machina.db",
+    "qdrant_db/**",
+    "backend/app/qdrant_db/**",
+    "uploads/**",
+    "frontend/**",
+    "**/*.env*",
+    ".claude/**",
+    ".github/**",
+    "workbench/compliance_obligation/**",
+    "workbench/customer_operations/**",
+    "workbench/onboarding_diagnostic.py"
+  ],
+
+  "projectionOnlyRule": "The workbench consumes ONLY projections and packages: .empkg via the package channel and MCP path/neighbor/subgraph queries at the AGENT token's clearance. It never reads backend internals, the ledger, or raw stores directly. If the workbench needs data no existing projection provides, that is a BLOCKED finding for the Steward — not a reason to reach deeper.",
+
+  "canonicalMutationPolicy": "Zero direct canonical writes — constitutional, not configurable (D29). Workbench findings re-enter exclusively as proposal-lane submissions (vault 08_proposals -> PROPOSAL-lane connector -> CANDIDATE -> human gate -> DERIVED fact). Proposal-lane candidates are never auto-approved. The existing fifth permanent guard (backend/test_agent_authorship_guard.py) must still prove from the ledger alone that no agent principal wrote canonical facts.",
+
+  "auditProvenanceExpectations": "Every finding the runner emits must carry evidence citations back to governed facts with source, ingestion date, and approval state, following the customer_operations evidence-driven kinding pattern (refusal-first, declared same-subject/cross-document evidence rules in each skill contract). Any consumption of packages/MCP appears in the ledger through existing mechanisms — the workstream adds no new audit machinery and bypasses none.",
+
+  "permissionBoundaryExpectations": "The runner operates at a real AGENT token's clearance; all MCP/package reads are clearance-filtered by the existing engine. The acceptance test must include at least one denied-access case proving the workbench degrades to explicit refusal (not silent omission, not fabrication) when clearance excludes needed facts.",
+
+  "compileGateImpact": "None permitted. backend/test_compile_gates.py and all permanent guards must pass unchanged. The new workbench must be structurally valid to the existing catalog convention (workbench.yaml + skills/*.yaml contracts) without modifying the runner-side validation it is checked against.",
+
+  "proofRequirements": [
+    {
+      "id": "corpus",
+      "command": "backend/.venv/Scripts/python.exe -m pytest backend/test_finance_cost_leakage_corpus.py -q",
+      "mustShow": "new corpus tests pass: corpus documents load, skill contracts parse and are ACTIVE, workbench.yaml is catalog-valid"
+    },
+    {
+      "id": "acceptance",
+      "command": "backend/.venv/Scripts/python.exe -m pytest backend/test_finance_cost_leakage_acceptance.py -q",
+      "mustShow": "each declared skill produces evidence-cited findings on the seeded corpus, refusal-first behavior on unsupported questions (profile rule 1)"
+    },
+    {
+      "id": "empty-evidence-state",
+      "command": "backend/.venv/Scripts/python.exe -m pytest backend/test_finance_cost_leakage_acceptance.py -q -k refusal",
+      "mustShow": "explicit refusal/no-evidence output when the corpus lacks support — never fabricated findings (profile rule 1); at least one such case per skill contract"
+    },
+    {
+      "id": "no-canonical-write",
+      "command": "backend/.venv/Scripts/python.exe -m pytest backend/test_agent_authorship_guard.py -q",
+      "mustShow": "the existing permanent guard still proves from the ledger alone that no agent principal wrote canonical facts (profile rules 3-5, D29)"
+    },
+    {
+      "id": "permission-scope",
+      "command": "backend/.venv/Scripts/python.exe -m pytest backend/test_authorization.py backend/test_finance_cost_leakage_acceptance.py -q -k denied",
+      "mustShow": "clearance filtering intact plus the workbench's denied-access case: explicit refusal under insufficient clearance (profile rule 7)"
+    },
+    {
+      "id": "full-regression",
+      "command": "backend/.venv/Scripts/python.exe -m pytest backend -q",
+      "mustShow": "no regressions vs a baseline run recorded BEFORE the first Builder edit (baseline output pasted in Builder handoff)"
+    }
+  ],
+
+  "verificationGate": {
+    "type": "adversarial-panel",
+    "verifiers": 4,
+    "passThreshold": 3,
+    "lenses": ["correctness", "scope-adherence", "provenance-and-evidence", "permission-leakage"],
+    "$comment": "Per profiles/expertmachina/workflows/evidence-gate.md. A provenance or permission fail is never waivable by vote count; it escalates to a human."
+  },
+
+  "rollbackAnchor": "git tag ws-finance-cost-leakage-baseline on the Builder's branch, created before the first edit",
+
+  "stopConditions": [
+    "THIS PASS: Steward stops after this contract and its handoff note are written — no Builder work until humanApproval is updated from PENDING by Robert",
+    "Builder stops when all six proofs have run with literal evidence and the handoff (incl. profile addendum A1-A5) is written; does not merge",
+    "Builder stops immediately if any needed data lacks an existing projection/package door (BLOCKED finding to Steward)",
+    "Sweeper stops if the baseline suite is red",
+    "Any agent stops immediately if work requires editing a forbiddenGlob",
+    "Any agent stops immediately upon finding a write path from workbench code to canonical state (critical defect, straight to human)"
+  ],
+
+  "downstreamPlan": [
+    { "part": "workbench bundle: workbench.yaml, skill contracts, seeded synthetic corpus, runner (customer_operations as reference)", "agent": "builder", "model": "opus" },
+    { "part": "corpus + acceptance tests incl. refusal and denied-access cases", "agent": "builder", "model": "opus" },
+    { "part": "post-build cleanup", "agent": "sweeper", "model": "sonnet" },
+    { "part": "evidence gate (4 lenses)", "agent": "steward", "model": "fable" }
+  ],
+
+  "nextRecommendedAgent": "human ratification first; then builder / opus"
+}
