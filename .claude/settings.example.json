@@ -1,0 +1,47 @@
+{
+  "$comment": "SAFE EXAMPLE — copy to .claude/settings.json to activate. Review every line first: hooks run with your OS permissions. This file wires (a) the deny-list that removes merge/push/destructive authority from ALL agents by default, and (b) the two governance hooks. Hook scripts must be activated first (copy the .example.js files to plain .js — see .claude/hooks/README.md).",
+
+  "permissions": {
+    "deny": [
+      "Bash(git push:*)",
+      "Bash(git merge:*)",
+      "Bash(git rebase:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git checkout -- :*)",
+      "Bash(git clean:*)",
+      "Bash(git filter-branch:*)",
+      "Bash(git tag -d:*)",
+      "Bash(rm -rf:*)",
+      "Bash(Remove-Item -Recurse:*)",
+      "Edit(.claude/settings.json)",
+      "Edit(CLAUDE.md)",
+      "Write(.claude/settings.json)",
+      "Write(CLAUDE.md)"
+    ],
+    "$commentDeny": "No agent gets merge/push/history-rewrite/bulk-delete authority by default; grant per-action by approving an explicit human-authorized exception in the session. CLAUDE.md and settings.json are self-protection: the constitution and its enforcement must not be editable by the agents they govern."
+  },
+
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \".claude/hooks/pretooluse-scope-guard.js\""
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \".claude/hooks/stop-proof-guard.js\""
+          }
+        ]
+      }
+    ]
+  }
+}

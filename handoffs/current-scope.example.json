@@ -1,0 +1,68 @@
+{
+  "$comment": "Example scope contract. The Steward writes the live version to handoffs/current-scope.json when ratifying a workstream. The pretooluse-scope-guard hook (once activated) reads the live file and mechanically denies Edit/Write calls outside allowedGlobs or matching forbiddenGlobs. Paths use forward slashes relative to the repo root.",
+
+  "workstream": "WS-example-fact-provenance-panel",
+  "objective": "Add a provenance side panel to the diagnostic workbench showing, for each governed fact used in an answer, its source, ingestion date, and approval state.",
+  "ratifiedBy": "steward",
+  "ratifiedDate": "2026-07-09",
+  "humanApproval": "robertkonecny@gmail.com approved scope in session <session-ref>",
+
+  "nonGoals": [
+    "No changes to the fact ingestion pipeline itself",
+    "No new fact approval states",
+    "No redesign of the workbench layout beyond the added panel"
+  ],
+
+  "allowedGlobs": [
+    "src/workbench/provenance/**",
+    "src/workbench/panels/registry.ts",
+    "tests/workbench/provenance/**"
+  ],
+
+  "forbiddenGlobs": [
+    "src/governance/**",
+    "src/audit-ledger/**",
+    "**/*.env*",
+    ".claude/**",
+    "handoffs/*.md"
+  ],
+
+  "proofRequirements": [
+    {
+      "id": "unit",
+      "command": "npm test -- --testPathPattern=provenance",
+      "mustShow": "all tests passing, literal runner summary pasted in handoff"
+    },
+    {
+      "id": "full-suite",
+      "command": "npm test",
+      "mustShow": "no regressions vs. baseline recorded before the change"
+    },
+    {
+      "id": "no-evidence-no-answer",
+      "command": "npm test -- --testPathPattern=provenance.empty-state",
+      "mustShow": "panel renders an explicit 'no provenance available' state, never fabricated fields"
+    }
+  ],
+
+  "verificationGate": {
+    "type": "adversarial-panel",
+    "verifiers": 3,
+    "passThreshold": 2,
+    "lenses": ["correctness", "scope-adherence", "evidence-quality"]
+  },
+
+  "rollbackAnchor": "git tag ws-example-baseline (create on branch before first Builder edit)",
+
+  "stopConditions": [
+    "Builder stops when proofs run and handoff is written; does not merge",
+    "Sweeper stops if baseline suite is red",
+    "Any agent stops immediately if work requires editing a forbiddenGlob"
+  ],
+
+  "downstreamPlan": [
+    { "part": "panel component + data wiring", "agent": "builder", "model": "opus" },
+    { "part": "post-build cleanup", "agent": "sweeper", "model": "sonnet" },
+    { "part": "gate", "agent": "steward", "model": "fable" }
+  ]
+}
