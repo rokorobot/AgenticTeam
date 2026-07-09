@@ -108,4 +108,34 @@ lens-1 blocker. Honest record of what happened:
 - The original `.json` contract-file glob deviation remains ruled BENIGN;
   backlog to widen the scope-template glob to `handoffs/**` still stands.
 
-Remediation commit and the lens-1 re-verdict are recorded below once run.
+### Final verdict (after remediation `0493b37`)
+
+**FULL GATE: PASS.** Lens 1 re-check returned **PASS** on `0493b37`;
+Lenses 2 and 3 carry forward (their surface — code, hook, scope — is
+byte-identical across the doc-only remediation, verified: `git diff
+1b0c613 0493b37 --stat` touches only the three docs + this record).
+
+| Lens | Verdict |
+|---|---|
+| 1. Rule fidelity | **PASS** (re-checked on 0493b37) |
+| 2. Genericness / scope | PASS (carried forward from 1b0c613) |
+| 3. Hook behavior | PASS (carried forward from 1b0c613) |
+
+Lens-1 re-check confirmed: HEAD `0493b37` on `1b0c613`; commit touches only
+the 3 contract-named docs + this gate record (no code, no settings, no
+product repo); `README.md` and `profiles/README.md` now satisfy
+`expectedFiles`; the three-field schema (`targetRepo`/`targetCanonical`/
+`targetWorktree`) documented matches both scope templates; the original
+omission is honestly recorded without rewriting the FAIL history (0
+deletions in this file); the seven rule requirements are unregressed
+(rule files byte-identical since 1b0c613).
+
+Residual non-blocking backlog (unchanged): widen scope-template glob to
+`handoffs/**`; hook fail-open on non-git paths; self-exemption heuristic;
+empty `CANONICAL_MARKERS`; cosmetic "clean except authorized handoffs"
+abbreviation.
+
+**Branch `feat/target-isolation-rule` @ `0493b37` is AUTHORIZED for merge
+preparation** — the merge itself remains a separate explicit human ruling
+(no agent has merge authority). ExpertMachina and PR #31 untouched
+throughout.
