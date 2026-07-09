@@ -3,8 +3,9 @@
 
   "profile": "<PROFILE-NAME>",
   "workstream": "<WS-id-short-slug>",
-  "targetRepo": "<absolute path to the repo the Builder executes in; omit only if the work targets AgenticTeam itself. All globs below are relative to this root>",
-  "targetRepoRemote": "<remote URL of the target repo, if any>",
+  "targetRepo": "<remote URL / owner-repo identity of the target repo; omit only if the work targets AgenticTeam itself>",
+  "targetCanonical": "<absolute path to the user's ORIGINAL checkout — READ-ONLY to agents; never edited. Used only as the reference to fetch/verify against and to clone/worktree from>",
+  "targetWorktree": "<absolute path to the isolated copy where the Builder actually works, named '<target repo name> copy for EM'. All allowed/forbidden globs are relative to THIS root. The Builder creates it (git worktree preferred) if absent and verifies it per the constitution's Target isolation rule>",
   "objective": "<one-paragraph objective>",
   "ratifiedBy": "steward",
   "ratifiedDate": "<YYYY-MM-DD>",

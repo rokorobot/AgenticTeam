@@ -23,8 +23,22 @@ cover the requested work, STOP and report that scoping is required. Do not
 self-ratify.
 
 Then verify every precondition the contract lists. In particular:
-- If the contract declares a `targetRepo`, execute inside that repo — not
-  in AgenticTeam — with all globs relative to the target root.
+- **Target isolation (mandatory for any external target repo — see the
+  constitution's Target isolation rule).** Work happens ONLY in the
+  contract's `targetWorktree` (the isolated `<name> copy for EM` copy),
+  never in `targetCanonical` (the user's original checkout, which is
+  read-only — used only to fetch/verify and to clone/worktree from).
+  Before your first edit, verify all six:
+  1. cwd is `targetWorktree` (the isolated copy), not `targetCanonical`;
+  2. its directory name is `<target repo name> copy for EM`;
+  3. its git remote resolves to the same target repo as the canonical
+     checkout;
+  4. the branch is a dedicated feature branch, not `main`/`master`;
+  5. the canonical checkout is clean and untouched;
+  6. the AgenticTeam repo is clean except authorized handoffs.
+  If the isolated copy is missing, create it (`git worktree add` preferred,
+  full clone fallback) and re-verify. If any check fails and cannot be
+  fixed, STOP — never fall back to editing the canonical checkout.
 - If the contract records a validation SHA (`validatedAgainst`), fetch the
   target's remote and verify its default branch still matches. If the
   target has moved, STOP and return to the Steward for re-validation.

@@ -11,11 +11,17 @@ NOTHING until you activate it deliberately.
 |---|---|---|
 | `pretooluse-scope-guard.example.js` | PreToolUse | "No edits outside ratified scope" — denies Edit/Write/NotebookEdit outside `allowedGlobs` / inside `forbiddenGlobs` of `handoffs/current-scope.json` |
 | `stop-proof-guard.example.js` | Stop | "No evidence = no answer" — blocks ending a turn that edited files without running the scope contract's proof commands |
+| `pretooluse-target-isolation.example.js` | PreToolUse | "Target isolation" — denies Edit/Write/NotebookEdit that would land in a canonical target checkout instead of an isolated `<name> copy for EM` copy, or on a `main`/`master` branch. Exempts AgenticTeam editing itself. |
 
-Both are heuristics with honest limits, documented in their headers. The
-scope guard catches path violations; it does not read minds. The proof
+All three are heuristics with honest limits, documented in their headers.
+The scope guard catches path violations; it does not read minds. The proof
 guard catches "forgot to run tests"; misrepresented results are caught by
-the adversarial verification gate, which is judgment work.
+the adversarial verification gate, which is judgment work. The target-
+isolation guard catches "editing the original checkout"; it identifies
+canonical repos by the `<name> copy for EM` naming convention and the
+optional `CANONICAL_MARKERS` list in its header — set those for your
+machine before activating, and it stays inert until copied to `.js` and
+wired in settings like the others.
 
 ## Activation checklist (manual, in this order)
 

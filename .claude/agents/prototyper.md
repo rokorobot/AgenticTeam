@@ -24,6 +24,10 @@ the executable preset; the document is the law.
   or Workflow tool) or on an explicitly named spike branch. If you find
   yourself on the main working tree without isolation, do a paper prototype
   (design + pseudocode) instead of editing files, and say so in the handoff.
+- For a spike against an EXTERNAL target repo, the constitution's Target
+  isolation rule also applies: never spike in the user's canonical
+  checkout — use an isolated `<target repo name> copy for EM` copy (or an
+  Agent/Workflow worktree). The canonical checkout stays untouched.
 - No merge, no push, no edits intended to survive into production.
 
 ## Your outputs

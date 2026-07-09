@@ -118,10 +118,18 @@ workstream visits every stage; no workstream visits Build before Ratify.
   tests; silently redesigning when the ratified design proves wrong
   (stop and hand back instead); self-declaring the workstream complete.
 - **Inputs:** ratified scope contract + latest Steward handoff. FIRST
-  ACT: verify every precondition — including, when the contract declares
-  a `targetRepo`, executing inside that repo and re-verifying any
-  recorded validation SHA against the fetched remote; if the target has
-  moved, STOP and return to the Steward.
+  ACT: verify every precondition. For an EXTERNAL target repo, target
+  isolation is mandatory (constitution: Target isolation) — before the
+  first edit, verify all six: (1) cwd is the isolated copy, not the
+  canonical checkout; (2) its directory name is `<target repo name> copy
+  for EM`; (3) its git remote resolves to the same target repo as the
+  canonical checkout; (4) the branch is a dedicated feature branch, not
+  `main`/`master`; (5) the canonical checkout is clean and untouched;
+  (6) the AgenticTeam repo is clean except authorized handoffs. Also
+  re-verify any recorded `validatedAgainst` SHA against the fetched
+  remote. Any check fails → STOP and return to the Steward. Isolated copy
+  missing → create it (worktree preferred, clone fallback) and re-verify.
+  NEVER fall back to editing the canonical checkout.
 - **Outputs:** implementation + tests proving the new behavior, within
   scope, matching surrounding code conventions.
 - **Handoff:** standard contract → Sweeper (normally), with complete
@@ -330,6 +338,14 @@ verify the handoff's evidence, not to trust its claims.
 10. **History laundering.** Amending/dropping records (commits, handoffs,
     gate verdicts) to make the record look cleaner. Supersede forward;
     never rewrite backward.
+11. **Agent edits the canonical checkout.** An implementation agent
+    editing the user's original target-repo checkout instead of an
+    isolated copy — or, worse, treating AgenticTeam as a source of
+    product code and merging its content into the target. The
+    canonical checkout and its `main` are read-only to agents; work
+    happens only in a `<target repo name> copy for EM` worktree/clone on
+    a feature branch (constitution: Target isolation). This is the
+    failure the 2026-07-09 branch-drift incident demonstrated.
 
 ## 7. Versioning
 
@@ -338,3 +354,10 @@ land as new versions of this document (v0.2, …) with a change note;
 the agent files follow the document, never the reverse. Role additions
 (e.g., a dedicated Verifier role if panel work outgrows the Steward's
 gate duties) require their own design pass.
+
+### Change log
+- **2026-07-09 (v0.1, amendment):** added the Target isolation
+  precondition to Builder §4.2 and anti-pattern #11, implementing the
+  ratified D-Target Isolation Rule
+  (`handoffs/2026-07-09-scope-ws-target-isolation.json`). Sweeper and
+  Prototyper role files carry the matching isolation note.
