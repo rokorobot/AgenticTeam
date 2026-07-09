@@ -1,0 +1,54 @@
+{
+  "$comment": "Profile scope template. The Steward copies this file as the SEED for handoffs/current-scope.json when ratifying a workstream under this profile, then fills every <PLACEHOLDER> and adds workstream specifics. Fields already filled here are the profile's standing policy — the Steward may tighten them, never weaken them. Hooks read allowedGlobs/forbiddenGlobs/proofRequirements; extra fields are constitution-level guidance.",
+
+  "profile": "<PROFILE-NAME>",
+  "workstream": "<WS-id-short-slug>",
+  "objective": "<one-paragraph objective>",
+  "ratifiedBy": "steward",
+  "ratifiedDate": "<YYYY-MM-DD>",
+  "humanApproval": "<who approved, where>",
+
+  "nonGoals": [
+    "<explicitly out of scope>"
+  ],
+
+  "allowedGlobs": [
+    "<paths the Builder/Sweeper may edit — keep narrow>"
+  ],
+
+  "forbiddenGlobs": [
+    "**/*.env*",
+    ".claude/**",
+    "handoffs/*.md",
+    "profiles/**"
+  ],
+
+  "proofRequirements": [
+    {
+      "id": "<proof-id>",
+      "command": "<exact command>",
+      "mustShow": "<what the literal output must demonstrate>"
+    }
+  ],
+
+  "verificationGate": {
+    "type": "adversarial-panel",
+    "verifiers": 3,
+    "passThreshold": 2,
+    "lenses": ["correctness", "scope-adherence", "evidence-quality"]
+  },
+
+  "rollbackAnchor": "<git tag/branch created before first Builder edit>",
+
+  "stopConditions": [
+    "Builder stops when proofs run and handoff is written; does not merge",
+    "Sweeper stops if baseline suite is red",
+    "Any agent stops immediately if work requires editing a forbiddenGlob"
+  ],
+
+  "downstreamPlan": [
+    { "part": "<part>", "agent": "builder", "model": "opus" },
+    { "part": "post-build cleanup", "agent": "sweeper", "model": "sonnet" },
+    { "part": "gate", "agent": "steward", "model": "fable" }
+  ]
+}

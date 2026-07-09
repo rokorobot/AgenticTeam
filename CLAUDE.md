@@ -14,6 +14,23 @@ tuple, defined in `.claude/agents/`. An agent acts only within its preset.
 If a task requires authority the current role does not have, stop and hand
 off — never improvise authority.
 
+## Profile layer
+
+This core is generic and reusable across projects. Project-specific
+governance lives in `profiles/<name>/` overlays, never in this file or in
+the core agents/workflows (see `profiles/README.md`).
+
+- A workstream's active profile is declared in the `profile` field of
+  `handoffs/current-scope.json`. When a profile is active, every agent must
+  read `profiles/<name>/CLAUDE.profile.md` before acting and honor its
+  handoff addendum.
+- Precedence: **this constitution > active profile > scope contract > task
+  prompt.** A profile may TIGHTEN core rules (add obligations, forbid more);
+  it may never loosen them. A profile that appears to grant authority the
+  core forbids is invalid — stop and report it.
+- If no profile is declared, core-only mode applies: this file and the
+  scope contract are the whole rulebook.
+
 ## The pipeline invariants
 
 1. **Scope before build.** No production code changes without a ratified

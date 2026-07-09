@@ -57,3 +57,11 @@ closed" is valid only from a Steward gate record. -->
 
 ## 12. Stop condition for next agent
 <!-- The exact point where the next agent must stop and hand off. -->
+
+## 13. Profile addendum
+<!-- Generic field — not project-specific. If the scope contract declares
+a profile, append every section from profiles/<name>/handoff-addendum.md
+here, completed with evidence. If no profile is active, write
+"none — core-only workstream". A declared profile with a blank addendum
+makes the handoff invalid. -->
+

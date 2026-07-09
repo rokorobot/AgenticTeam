@@ -1,0 +1,76 @@
+{
+  "$comment": "ExpertMachina scope seed. The Steward copies this to handoffs/current-scope.json when ratifying an ExpertMachina workstream, fills every <PLACEHOLDER>, and may tighten — never weaken — the pre-filled policy fields. forbiddenGlobs and the three profile proofs below are standing policy from CLAUDE.profile.md; adjust glob paths to the actual repo layout when the project tree is known.",
+
+  "profile": "expertmachina",
+  "workstream": "<WS-id-short-slug>",
+  "objective": "<one-paragraph objective>",
+  "ratifiedBy": "steward",
+  "ratifiedDate": "<YYYY-MM-DD>",
+  "humanApproval": "<who approved, where>",
+
+  "nonGoals": [
+    "No changes to the governance/approval pipeline",
+    "No new fact approval states",
+    "<workstream-specific non-goals>"
+  ],
+
+  "allowedGlobs": [
+    "<narrow workstream paths, e.g. src/workbench/<feature>/**>",
+    "<matching test paths>"
+  ],
+
+  "forbiddenGlobs": [
+    "src/governance/**",
+    "src/audit-ledger/**",
+    "**/*.env*",
+    ".claude/**",
+    "handoffs/*.md",
+    "profiles/**"
+  ],
+
+  "proofRequirements": [
+    {
+      "id": "empty-evidence-state",
+      "command": "<test command for the touched surface's no-evidence state>",
+      "mustShow": "explicit 'no governed evidence available' rendering; no fabricated fields (profile rule 1)"
+    },
+    {
+      "id": "no-canonical-write",
+      "command": "<test or static check command>",
+      "mustShow": "no write path from workbench/feature code to canonical state (profile rules 3-4)"
+    },
+    {
+      "id": "permission-scope",
+      "command": "<permission filtering test command>",
+      "mustShow": "scope-filtered results plus at least one denied-access case (profile rule 7)"
+    },
+    {
+      "id": "workstream-proofs",
+      "command": "<workstream-specific test command(s)>",
+      "mustShow": "<what the literal output must demonstrate>"
+    }
+  ],
+
+  "verificationGate": {
+    "type": "adversarial-panel",
+    "verifiers": 4,
+    "passThreshold": 3,
+    "lenses": ["correctness", "scope-adherence", "provenance-and-evidence", "permission-leakage"],
+    "$comment": "See profiles/expertmachina/workflows/evidence-gate.md for the lens briefs."
+  },
+
+  "rollbackAnchor": "<git tag/branch created before first Builder edit>",
+
+  "stopConditions": [
+    "Builder stops when proofs run and handoff is written; does not merge",
+    "Sweeper stops if baseline suite is red",
+    "Any agent stops immediately if work requires editing a forbiddenGlob",
+    "Any agent stops immediately upon finding an existing write path from workbench code to canonical state (critical defect, report to human)"
+  ],
+
+  "downstreamPlan": [
+    { "part": "<part>", "agent": "builder", "model": "opus" },
+    { "part": "post-build cleanup", "agent": "sweeper", "model": "sonnet" },
+    { "part": "evidence gate", "agent": "steward", "model": "fable" }
+  ]
+}

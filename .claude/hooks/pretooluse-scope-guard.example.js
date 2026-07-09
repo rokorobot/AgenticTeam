@@ -16,7 +16,7 @@
  * Behavior while inactive scope file is missing: ALLOW with a warning, so
  * the kit is usable before governance is fully switched on. Once you trust
  * the flow, flip FAIL_CLOSED to true so a missing scope contract blocks all
- * edits (recommended for ExpertMachina-style governed development).
+ * edits (recommended end state when running under a governed profile).
  *
  * Hook protocol (Claude Code):
  *   - stdin: JSON { tool_name, tool_input, cwd, ... }
