@@ -32,9 +32,15 @@ task prompt. Nothing here grants authority the core denies.
   AgenticTeam but EXECUTED in the target repo declared by the scope
   contract's `targetRepo` field (normally
   `C:/Users/Robert/ExpertMachina`). The Builder verifies the contract's
-  `preconditions` — including branching from `main` — before its first
-  edit, and stops if they don't hold. Handoffs and gate records live in
-  AgenticTeam.
+  `preconditions` — including branching from up-to-date `origin/main` —
+  before its first edit, and stops if they don't hold. Handoffs and gate
+  records live in AgenticTeam.
+- **Freshness rule (lesson of WS-finance-cost-leakage):** the target
+  project ships through its own pipeline concurrently. Scoping validates
+  against `origin/main` AFTER a fetch (never the local working tree
+  alone) and records the inspected SHA in the contract's
+  `validatedAgainst` field; the Builder re-fetches and re-verifies that
+  SHA at start, stopping for re-validation if origin has moved.
 - **Primary risks:** fabricated or unapproved facts presented as governed;
   silent mutation of canonical state; permission leakage across user
   scopes; audit gaps that make answers untraceable; accidental
@@ -101,8 +107,20 @@ scope-guard hook enforces them mechanically on every workstream:
   bar — never a side effect of workbench work.
 - Shipped workbenches are each other's forbidden territory: a new
   workbench never edits `workbench/compliance_obligation/**`,
-  `workbench/customer_operations/**`, or any later catalog entry. When a
-  new workbench ships, its path joins this standing list.
+  `workbench/contract_intelligence/**`, `workbench/customer_operations/**`,
+  `workbench/executive_briefing/**`, `workbench/finance_cost_leakage/**`,
+  `workbench/procurement_intelligence/**`, or any later catalog entry.
+  When a new workbench ships, its path joins this standing list
+  (refreshed 2026-07-09 against origin/main `7c2203b`).
+- `workbench/common.py` and `workbench/__init__.py` are shared plumbing:
+  workbenches REUSE `common.py` by import (the sanctioned ruling-6
+  pattern; its stability is tracked release over release) and never edit
+  it from a workbench workstream.
+- **Greenfield-only policy:** until a shipped-workbench-extension policy
+  is minted by its own Steward design pass, workstreams target greenfield
+  catalog slots only (per the ratified 16-workbench catalog in the target
+  repo's `docs/workbench-catalog.md`; #10/#13/#14/#15 are the platform
+  itself and are not workbench build targets either).
 - Touch only via governed process: canonical-state schemas, approval
   workflows, compile gates, and permanent guards.
 

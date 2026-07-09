@@ -1,57 +1,67 @@
 {
-  "$comment": "First profile-mode scope contract. Seeded from profiles/expertmachina/scope-template.json, tightened against the ACTUAL ExpertMachina repo layout (inspected 2026-07-09). Globs are relative to targetRepo, not to AgenticTeam.",
-
-  "status": "SUPERSEDED-BY-EVENTS — Builder authorization WITHDRAWN. Re-validation against ExpertMachina origin/main 5fd448f (2026-07-09) found workbench/finance_cost_leakage/ already shipped via PR #29 (v2.3, commercial verdict passed) with a DIFFERENT skill set. This contract's allowedGlobs now point into a shipped catalog entry, which the profile forbids. The ratification below stands as historical record; no agent may execute this contract. See handoffs/2026-07-09-ws-finance-cost-leakage-revalidation.md for the finding and options.",
+  "$comment": "Second profile-mode scope contract; first authorized Builder candidate. Seeded from profiles/expertmachina/scope-template.json (post-refresh), validated against ExpertMachina origin/main AFTER fetch. Predecessor (WS-finance-cost-leakage, SUPERSEDED-BY-EVENTS) is preserved in git history at a6582e7 and in its handoff records. All globs relative to targetRepo.",
 
   "profile": "expertmachina",
-  "workstream": "WS-finance-cost-leakage-workbench",
+  "workstream": "WS-operations-process-workbench",
   "targetRepo": "C:/Users/Robert/ExpertMachina",
   "targetRepoRemote": "https://github.com/rokorobot/ExpertMachina",
+  "validatedAgainst": "7c2203b",
+  "$commentValidated": "origin/main @ 7c2203b (PR #30, release/v230-project-state, 2026-07-09), inspected after fetch. PR #30 was docs-only: workbench surface identical to the scout's 5fd448f baseline; constitutional tests present; roadmap NEXT is [OE] decision-minting — no next workbench planned by the target's own pipeline. Builder MUST re-fetch and re-verify this SHA at start; if origin/main has moved, STOP and return to Steward.",
 
-  "objective": "Create the Finance & Cost Leakage Workbench as the second commercial entry in Workbench Catalog v1: a governed bundle of declared skill contracts (workbench.yaml + skills/*.yaml + corpus + runner) that diagnoses cost leakage signals (duplicate/overlapping spend, contract-vs-invoice drift, unowned recurring costs, missing approval evidence, stale vendor terms) over a governed finance corpus. It follows the customer_operations pattern exactly: a consumer OUTSIDE the governed backend, using only existing doors (.empkg packages + MCP at a real AGENT token's clearance), with findings re-entering canon ONLY through the proposal lane (D29 One-Way Valve).",
+  "objective": "Create the Operations / Process Improvement Workbench (canonical #8, Layer 3 greenfield in the ratified 16-workbench catalog) as the first clean AgenticTeam profile-mode Builder run: a Catalog v1 bundle at workbench/operations_process_improvement/ (workbench.yaml + five ratified ACTIVE skill contracts + synthetic corpus + acceptance runner) diagnosing process gaps, SOP inconsistencies, missing handoffs, and outdated procedure documents over governed process documents. It is a consumer OUTSIDE the governed backend using only existing doors, mirroring the newest shipped convention (finance_cost_leakage v2.3 as reference bundle), reusing workbench/common.py BY IMPORT only.",
 
   "ratifiedBy": "steward",
   "ratifiedDate": "2026-07-09",
-  "humanApproval": "RATIFIED by Robert (robertkonecny@gmail.com) on 2026-07-09, in session: five skill contracts ratified with standing diagnostic-only policy, and branch precondition confirmed. Ratification record: handoffs/2026-07-09-ws-finance-cost-leakage-ratification.md",
+  "humanApproval": "RATIFIED by Robert (robertkonecny@gmail.com) on 2026-07-09, in session: workbench #8 confirmed as first clean Builder candidate; five ACTIVE skills ratified with diagnostic/projection-only standing policy; profile-template refresh approved and folded into this pass. Ratification recorded in handoffs/2026-07-09-ws-operations-process-steward.md",
 
   "skillContracts": {
-    "$comment": "Ratified 2026-07-09. These five are the declared bundle; the Builder implements exactly these as skills/*.yaml contracts, no additions without re-scoping.",
+    "$comment": "Ratified 2026-07-09 from the target repo's own master skill registry (docs/workbench-skill-registry.md §8, [now]-tagged entries; assist per shipped 4+1 shape). The Builder implements exactly these five as skills/*.yaml declared contracts, no additions without re-scoping.",
     "ratified": [
-      { "key": "duplicate_spend_detection", "purpose": "Finds likely duplicate invoices, payments, vendor charges, or recurring expenses." },
-      { "key": "contract_invoice_drift", "purpose": "Compares approved contract terms against invoice/payment evidence and flags mismatches." },
-      { "key": "unowned_recurring_costs", "purpose": "Finds recurring subscriptions, vendors, tools, or services with unclear owner, approver, or business purpose." },
-      { "key": "missing_approval_evidence", "purpose": "Flags spend items where approval evidence is absent, stale, incomplete, or inaccessible." },
-      { "key": "stale_vendor_terms", "purpose": "Detects vendor contracts, pricing, renewal terms, or obligations that appear outdated or no longer aligned with current spend." }
+      { "key": "detect_process_contradictions", "registryTag": "now", "purpose": "Finds contradictory instructions across process documents (doc-vs-doc conflict pattern)." },
+      { "key": "compare_sop_vs_policy", "registryTag": "now", "purpose": "Compares SOP content against governing policy documents on declared axes and flags mismatches." },
+      { "key": "detect_missing_handoffs", "registryTag": "now", "purpose": "Finds process steps whose handoff (next owner, trigger, or receiving procedure) is undefined in the documented process." },
+      { "key": "detect_outdated_process_documents", "registryTag": "now", "purpose": "Detects process documents that appear superseded, stale, or misaligned with newer governed documents (revision-backed)." },
+      { "key": "prepare_process_map_projection", "registryTag": "assist", "purpose": "Assist: composes a cited, non-authoritative map of the documented process from governed evidence — a projection, never a source of truth." }
     ],
-    "standingPolicy": "These skills produce diagnostic findings only. They do not mutate canonical facts, vendor records, contracts, invoices, approvals, or audit state. Any suggested correction re-enters through the governed proposal lane."
+    "excludedByDesign": "Valve-synth contracts (generate_process_improvement_backlog, prepare_improvement_proposal), identify_missing_process_stage_owner [ES], and estimate_improvement_impact (SYNTHESIS_INFERRED) are out of scope for the first run; each requires machinery a first clean end-to-end run should not carry.",
+    "standingPolicy": "This workbench is diagnostic/projection-only. It does not mutate canonical SOPs, policies, ownership records, workflow state, or audit state. Findings and suggested improvements re-enter only through the governed proposal lane."
   },
 
   "preconditions": [
-    "Builder may start only from up-to-date main after test/resurrect-golden-path-e2e lands or is explicitly abandoned/merged away — never on top of the test branch.",
-    "All five ratified skill contracts must be authored as skills/*.yaml and ACTIVE per Catalog v1 convention before the runner will accept them (non-ACTIVE contracts refused)."
+    "Builder fetches origin and verifies origin/main still equals validatedAgainst (7c2203b); if moved, STOP and return to Steward for re-validation",
+    "Builder starts from a fresh branch off up-to-date origin/main — never on top of a test/feature branch",
+    "All five ratified skill contracts must be authored as skills/*.yaml and ACTIVE per Catalog v1 convention before the runner will accept them",
+    "Builder verifies the proof-command invocation (venv path, pytest.ini discovery) on the baseline run BEFORE the first edit and reports any correction to the Steward rather than silently deviating"
   ],
 
   "nonGoals": [
-    "No changes to the governed backend (backend/app/**) — no new endpoints, projection types, connectors, policy, identity, or ledger logic",
-    "No changes to the MCP gateway or mcp_server.py",
+    "No changes to the governed backend (backend/app/**), MCP gateway, or backend/mcp_server.py",
+    "No edits to workbench/common.py or workbench/__init__.py — reuse common.py by import only (ruling-6 pattern)",
     "No new fact approval states, evidence classes, or clearance levels",
-    "No vault writes and no changes to vault managed folders or the proposal-lane floor (00_system, 07_agent_workspaces, 08_proposals)",
-    "No frontend changes in this workstream",
+    "No vault writes; untouchable floor untouched",
     "No compile-gate or permanent-guard modifications",
-    "No real customer financial data in the corpus — synthetic/example finance documents only, following the compliance_obligation corpus pattern"
+    "No valve-synth, [ES], or SYNTHESIS_INFERRED skills in this workstream (see skillContracts.excludedByDesign)",
+    "No [OE] dependencies: document-governed evidence only — no execution logs, traces, or operational-system records",
+    "No frontend changes",
+    "No real company process documents in the corpus — synthetic SOPs/policies/checklists only"
   ],
 
   "allowedGlobs": [
-    "workbench/finance_cost_leakage/**",
-    "backend/test_finance_cost_leakage_corpus.py",
-    "backend/test_finance_cost_leakage_acceptance.py",
-    "docs/workbench-finance-cost-leakage.md"
+    "workbench/operations_process_improvement/**",
+    "backend/test_operations_corpus.py",
+    "backend/test_operations_acceptance.py",
+    "backend/test_operations_workbench.py",
+    "docs/operations-process-workbench.md"
   ],
+  "$commentAllowed": "Test naming mirrors the newest shipped convention (test_finance_{corpus,acceptance,workbench}.py). The docs file mirrors docs/finance-cost-leakage-v2.3.md-style build records; exact title/versioning to match the target repo's docs conventions at build time.",
 
   "forbiddenGlobs": [
     "backend/app/**",
     "backend/mcp_server.py",
     "backend/harness/**",
+    "backend/alembic/**",
+    "backend/alembic.ini",
+    "backend/pytest.ini",
     "vault/**",
     "expert_machina.db",
     "backend/expert_machina.db",
@@ -59,49 +69,69 @@
     "backend/app/qdrant_db/**",
     "uploads/**",
     "frontend/**",
+    "archive/**",
     "**/*.env*",
     ".claude/**",
     ".github/**",
     "workbench/compliance_obligation/**",
+    "workbench/contract_intelligence/**",
     "workbench/customer_operations/**",
-    "workbench/onboarding_diagnostic.py"
+    "workbench/executive_briefing/**",
+    "workbench/finance_cost_leakage/**",
+    "workbench/procurement_intelligence/**",
+    "workbench/common.py",
+    "workbench/__init__.py",
+    "workbench/onboarding_diagnostic.py",
+    "docs/DECISIONS.md",
+    "docs/workbench-catalog.md",
+    "docs/workbench-skill-registry.md",
+    "docs/roadmap.md",
+    "PROJECT_STATE.md"
   ],
+  "$commentForbidden": "Includes the refreshed six-shipped-workbench list, shared plumbing, and the target repo's constitutional/state documents (DECISIONS, catalog, registry, roadmap, PROJECT_STATE) — those change only through the target project's own process, never as a side effect of AgenticTeam work.",
 
-  "projectionOnlyRule": "The workbench consumes ONLY projections and packages: .empkg via the package channel and MCP path/neighbor/subgraph queries at the AGENT token's clearance. It never reads backend internals, the ledger, or raw stores directly. If the workbench needs data no existing projection provides, that is a BLOCKED finding for the Steward — not a reason to reach deeper.",
+  "shippedWorkbenchCollisionPolicy": "GREENFIELD-ONLY for this and any workstream until a shipped-workbench-extension policy is minted by its own Steward design pass. Shipped workbenches (#1,#2,#3,#5,#9,#16) and platform entries (#10,#13,#14,#15) are not build targets. If the Builder discovers mid-build that #8 territory overlaps a shipped surface in ANY way not visible at scoping, that is a BLOCKED finding to the Steward, not a judgment call.",
 
-  "canonicalMutationPolicy": "Zero direct canonical writes — constitutional, not configurable (D29). Workbench findings re-enter exclusively as proposal-lane submissions (vault 08_proposals -> PROPOSAL-lane connector -> CANDIDATE -> human gate -> DERIVED fact). Proposal-lane candidates are never auto-approved. The existing fifth permanent guard (backend/test_agent_authorship_guard.py) must still prove from the ledger alone that no agent principal wrote canonical facts.",
+  "projectionOnlyRule": "The workbench consumes ONLY the existing doors: .empkg packages via the package channel and MCP queries at a real AGENT token's clearance. It never reads backend internals, the ledger, or raw stores directly. The assist skill (prepare_process_map_projection) produces a cited, visibly non-authoritative projection — never a source of truth. Data with no existing door = BLOCKED finding for the Steward.",
 
-  "auditProvenanceExpectations": "Every finding the runner emits must carry evidence citations back to governed facts with source, ingestion date, and approval state, following the customer_operations evidence-driven kinding pattern (refusal-first, declared same-subject/cross-document evidence rules in each skill contract). Any consumption of packages/MCP appears in the ledger through existing mechanisms — the workstream adds no new audit machinery and bypasses none.",
+  "canonicalMutationPolicy": "Zero direct canonical writes — constitutional, not configurable (D29 One-Way Valve). Findings and improvement suggestions re-enter exclusively through the proposal lane (vault 08_proposals -> PROPOSAL-lane connector -> CANDIDATE -> human gate -> DERIVED fact). Proposal-lane candidates are never auto-approved. The permanent authorship guard must still prove from the ledger alone that no agent principal wrote canonical facts.",
 
-  "permissionBoundaryExpectations": "The runner operates at a real AGENT token's clearance; all MCP/package reads are clearance-filtered by the existing engine. The acceptance test must include at least one denied-access case proving the workbench degrades to explicit refusal (not silent omission, not fabrication) when clearance excludes needed facts.",
+  "auditProvenanceExpectations": "Every finding cites governed evidence with source, ingestion date, and approval state, following the shipped evidence-driven kinding pattern (refusal-first; declared same-subject/cross-document evidence rules in each skill contract; verbatim-or-declared derivations — the finance v2.3 'no invented values' discipline applies to process facts: no invented owners, dates, or process steps). Consumption flows through existing ledger mechanisms; this workstream adds no audit machinery and bypasses none.",
 
-  "compileGateImpact": "None permitted. backend/test_compile_gates.py and all permanent guards must pass unchanged. The new workbench must be structurally valid to the existing catalog convention (workbench.yaml + skills/*.yaml contracts) without modifying the runner-side validation it is checked against.",
+  "permissionBoundaryExpectations": "The runner operates at a real AGENT token's clearance; all reads are clearance-filtered by the existing engine. The acceptance test must include at least one denied-access case proving the workbench degrades to explicit refusal (not silent omission, not fabrication) when clearance excludes needed documents.",
+
+  "compileGateImpact": "None permitted. backend/test_compile_gates.py and all permanent guards must pass unchanged. The new bundle must be structurally valid to the existing catalog convention without modifying any runner-side validation it is checked against. Zero new surface or law: no new decisions minted, no guard changes, common.py unchanged (a seventh time).",
 
   "proofRequirements": [
     {
       "id": "corpus",
-      "command": "backend/.venv/Scripts/python.exe -m pytest backend/test_finance_cost_leakage_corpus.py -q",
-      "mustShow": "new corpus tests pass: corpus documents load, skill contracts parse and are ACTIVE, workbench.yaml is catalog-valid"
+      "command": "backend/.venv/Scripts/python.exe -m pytest backend/test_operations_corpus.py -q",
+      "mustShow": "synthetic corpus documents load; five skill contracts parse and are ACTIVE; workbench.yaml is catalog-valid"
     },
     {
       "id": "acceptance",
-      "command": "backend/.venv/Scripts/python.exe -m pytest backend/test_finance_cost_leakage_acceptance.py -q",
-      "mustShow": "each declared skill produces evidence-cited findings on the seeded corpus, refusal-first behavior on unsupported questions (profile rule 1)"
+      "command": "backend/.venv/Scripts/python.exe -m pytest backend/test_operations_acceptance.py -q",
+      "mustShow": "each ratified skill produces evidence-cited findings on the seeded corpus; refusal-first on unsupported questions (profile rule 1)"
     },
     {
       "id": "empty-evidence-state",
-      "command": "backend/.venv/Scripts/python.exe -m pytest backend/test_finance_cost_leakage_acceptance.py -q -k refusal",
-      "mustShow": "explicit refusal/no-evidence output when the corpus lacks support — never fabricated findings (profile rule 1); at least one such case per skill contract"
+      "command": "backend/.venv/Scripts/python.exe -m pytest backend/test_operations_acceptance.py -q -k refusal",
+      "mustShow": "explicit refusal/no-evidence output when the corpus lacks support — never fabricated findings; at least one refusal case per skill contract (profile rule 1)"
     },
     {
       "id": "no-canonical-write",
       "command": "backend/.venv/Scripts/python.exe -m pytest backend/test_agent_authorship_guard.py -q",
-      "mustShow": "the existing permanent guard still proves from the ledger alone that no agent principal wrote canonical facts (profile rules 3-5, D29)"
+      "mustShow": "the permanent authorship guard still proves from the ledger alone that no agent principal wrote canonical facts (profile rules 3-5, D29)"
     },
     {
       "id": "permission-scope",
-      "command": "backend/.venv/Scripts/python.exe -m pytest backend/test_authorization.py backend/test_finance_cost_leakage_acceptance.py -q -k denied",
+      "command": "backend/.venv/Scripts/python.exe -m pytest backend/test_authorization.py backend/test_operations_acceptance.py -q -k denied",
       "mustShow": "clearance filtering intact plus the workbench's denied-access case: explicit refusal under insufficient clearance (profile rule 7)"
+    },
+    {
+      "id": "compile-gates",
+      "command": "backend/.venv/Scripts/python.exe -m pytest backend/test_compile_gates.py -q",
+      "mustShow": "all compile gates pass unchanged (profile compile-gate neutrality)"
     },
     {
       "id": "full-regression",
@@ -115,26 +145,26 @@
     "verifiers": 4,
     "passThreshold": 3,
     "lenses": ["correctness", "scope-adherence", "provenance-and-evidence", "permission-leakage"],
-    "$comment": "Per profiles/expertmachina/workflows/evidence-gate.md. A provenance or permission fail is never waivable by vote count; it escalates to a human."
+    "$comment": "Per profiles/expertmachina/workflows/evidence-gate.md. A provenance or permission fail is never waivable by vote count — it escalates to a human."
   },
 
-  "rollbackAnchor": "git tag ws-finance-cost-leakage-baseline on the Builder's branch, created before the first edit",
+  "rollbackAnchor": "git tag ws-operations-process-baseline on the Builder's branch, created before the first edit",
 
   "stopConditions": [
-    "THIS PASS: Steward stops after this contract and its handoff note are written — no Builder work until humanApproval is updated from PENDING by Robert",
-    "Builder stops when all six proofs have run with literal evidence and the handoff (incl. profile addendum A1-A5) is written; does not merge",
-    "Builder stops immediately if any needed data lacks an existing projection/package door (BLOCKED finding to Steward)",
+    "Builder verifies ALL preconditions first (incl. validatedAgainst re-check after fetch) and stops if any is unmet",
+    "Builder stops when all seven proofs have run with literal evidence and the handoff (incl. profile addendum A1-A5) is written; does not merge, does not push",
+    "Builder stops immediately if any needed data lacks an existing door, or if #8 territory unexpectedly overlaps a shipped surface (BLOCKED finding to Steward)",
     "Sweeper stops if the baseline suite is red",
     "Any agent stops immediately if work requires editing a forbiddenGlob",
     "Any agent stops immediately upon finding a write path from workbench code to canonical state (critical defect, straight to human)"
   ],
 
   "downstreamPlan": [
-    { "part": "workbench bundle: workbench.yaml, skill contracts, seeded synthetic corpus, runner (customer_operations as reference)", "agent": "builder", "model": "opus" },
-    { "part": "corpus + acceptance tests incl. refusal and denied-access cases", "agent": "builder", "model": "opus" },
+    { "part": "workbench bundle: workbench.yaml, five ratified ACTIVE skill contracts, synthetic corpus, acceptance runner (finance_cost_leakage v2.3 as newest-convention reference; common.py by import)", "agent": "builder", "model": "opus" },
+    { "part": "corpus + acceptance + workbench tests incl. refusal and denied-access cases", "agent": "builder", "model": "opus" },
     { "part": "post-build cleanup", "agent": "sweeper", "model": "sonnet" },
     { "part": "evidence gate (4 lenses)", "agent": "steward", "model": "fable" }
   ],
 
-  "nextRecommendedAgent": "human ratification first; then builder / opus"
+  "nextRecommendedAgent": "builder / opus — authorized once this contract and the profile refresh are committed together (they are linked: the refresh is what makes this scope safe)"
 }

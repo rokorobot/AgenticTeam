@@ -5,13 +5,15 @@
   "workstream": "<WS-id-short-slug>",
   "targetRepo": "C:/Users/Robert/ExpertMachina",
   "targetRepoRemote": "https://github.com/rokorobot/ExpertMachina",
+  "validatedAgainst": "<origin/main SHA the Steward inspected AFTER a fetch — never the local working tree alone. The Builder re-fetches and re-verifies this SHA at start; if origin/main has moved, Builder stops and returns to the Steward for re-validation (lesson of WS-finance-cost-leakage: the target ships through its own pipeline concurrently)>",
   "objective": "<one-paragraph objective. For a new workbench: name the domain_key, the diagnostic value, and confirm it follows the Workbench Catalog v1 bundle pattern>",
   "ratifiedBy": "steward",
   "ratifiedDate": "<YYYY-MM-DD>",
   "humanApproval": "PENDING — Builder must not start until a human replaces this value with who/where approval was given",
 
   "preconditions": [
-    "Builder starts from a fresh branch off main — verify main is the checked-out base and no unrelated test/feature branch is active",
+    "Builder fetches origin and verifies origin/main still equals validatedAgainst; if moved, STOP and return to Steward for re-validation",
+    "Builder starts from a fresh branch off up-to-date origin/main — never on top of a test/feature branch",
     "For workbench work: all skill contracts the workbench declares must be ratified ACTIVE before the runner will accept them (Catalog v1 convention)",
     "<workstream-specific preconditions>"
   ],
@@ -48,10 +50,16 @@
     ".claude/**",
     ".github/**",
     "workbench/compliance_obligation/**",
+    "workbench/contract_intelligence/**",
     "workbench/customer_operations/**",
+    "workbench/executive_briefing/**",
+    "workbench/finance_cost_leakage/**",
+    "workbench/procurement_intelligence/**",
+    "workbench/common.py",
+    "workbench/__init__.py",
     "workbench/onboarding_diagnostic.py"
   ],
-  "$commentForbidden": "backend/app/** is the governed core (ledger, policy, identity, proposals, projections engine). Existing workbenches are each other's forbidden territory — a new workbench never edits a shipped one. When a NEW workbench ships, add its path to this standing list.",
+  "$commentForbidden": "backend/app/** is the governed core (ledger, policy, identity, proposals, projections engine). Shipped workbenches are each other's forbidden territory — a new workbench never edits a shipped one; when a NEW workbench ships, add its path to this standing list (refreshed 2026-07-09 against origin/main 7c2203b: six shipped). workbench/common.py is the ruling-6 shared plumbing: REUSE BY IMPORT is the sanctioned pattern (its stability is tracked release over release); editing it is forbidden from workbench workstreams. Until a shipped-workbench-extension policy is minted by its own Steward design pass, workstreams target GREENFIELD catalog slots only.",
 
   "projectionOnlyRule": "The workbench consumes ONLY the existing doors: .empkg packages via the package channel and MCP path/neighbor/subgraph queries at a real AGENT token's clearance. It never reads backend internals, the ledger, or raw stores directly. Data with no existing projection/package door = BLOCKED finding for the Steward, never a reason to reach deeper.",
 
