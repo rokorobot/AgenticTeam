@@ -28,6 +28,34 @@ from most to least stable:
 Precedence: core > profile > scope contract > task prompt. Profiles may
 tighten core rules, never loosen them. Full details: `profiles/README.md`.
 
+## Target isolation (AgenticTeam is a control plane)
+
+AgenticTeam orchestrates work on product repos; it is never a source of
+product code (constitution: Target isolation).
+
+- **AgenticTeam content never enters a product repo.** No AgenticTeam file,
+  branch, agent, hook, handoff, or governance artifact is ever merged,
+  copied, pushed, or injected into a target product repo — there is no
+  "merge AgenticTeam into `<target>`" pathway.
+- **Agents work only in an isolated copy of the target.** For any external
+  target repo, work happens in a dedicated isolated copy of that *same*
+  repo — a git worktree (preferred) or full clone — named
+  `<target repo name> copy for EM` (e.g. `ExpertMachina copy for EM`), on a
+  dedicated feature branch. The user's canonical checkout and its `main`
+  are **read-only to agents**.
+- **Product changes return only via an in-target PR** — the isolated
+  copy's feature branch → the target repo's own `main`, merged only after
+  explicit human authorization that names owner/repo, PR number, source and
+  target branches, head SHA, and the cwd repo identity. Bare "merge PR #x"
+  is not a valid authorization.
+- **No isolation, no start.** If the isolated copy cannot be created or
+  verified, the workstream does not start — agents never fall back to the
+  canonical checkout.
+
+Machinery: the `pretooluse-target-isolation` example hook enforces this
+deterministically once activated; the scope-template `targetCanonical` /
+`targetWorktree` fields carry the paths (see `profiles/README.md`).
+
 ## Two ways to run it
 
 **Core-only mode** — for a project with no special governance: ignore

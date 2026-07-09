@@ -31,9 +31,13 @@ wired in settings like the others.
    `.example` (activated copies are what settings reference; keep the
    examples as documentation).
 3. Copy `.claude/settings.example.json` to `.claude/settings.json` — it
-   wires both hooks and adds the deny-list for push/merge/destructive
-   commands. Review every line before saving; hooks run with your
-   permissions.
+   wires the scope-guard and proof-guard hooks and adds the deny-list for
+   push/merge/destructive commands. Review every line before saving; hooks
+   run with your permissions. NOTE: `pretooluse-target-isolation.example.js`
+   is NOT yet wired by `settings.example.json` — to activate it, add its
+   own `PreToolUse` entry (matcher `Edit|Write|NotebookEdit`, per its
+   header) and set `CANONICAL_MARKERS` to your real product-repo paths
+   first. It ships inert like the others.
 4. Have the Steward agent ratify a first workstream so
    `handoffs/current-scope.json` exists.
 5. Test the guard rails on purpose: ask an agent to edit a file in

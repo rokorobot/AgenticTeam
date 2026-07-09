@@ -40,24 +40,42 @@ on every agent working that workstream must read
 `profiles/<name>/CLAUDE.profile.md` first and complete the profile's
 handoff addendum in its handoffs. No profile field = core-only mode.
 
-## External target repos
+## External target repos (target isolation)
 
-AgenticTeam and the project it governs usually live in DIFFERENT
-repositories. The scope contract carries a `targetRepo` field (absolute
-path, plus optional `targetRepoRemote`): all allowed/forbidden globs are
-relative to that root, and the Builder/Sweeper execute INSIDE the target
-repo — while scope contracts, handoffs, and gate records stay here in
-AgenticTeam as the durable governance ledger.
+AgenticTeam and the project it governs live in DIFFERENT repositories, and
+AgenticTeam is a control plane only — its content never enters a product
+repo (constitution: Target isolation). Agents operate on an external target
+exclusively through an **isolated copy** of that same repo; the user's
+canonical checkout stays read-only. The scope contract carries three
+target fields:
 
-Two rules make this safe:
+| Field | Meaning | Agent access |
+|---|---|---|
+| `targetRepo` | The target repository IDENTITY (remote URL or `owner/repo`) | reference only |
+| `targetCanonical` | Absolute path to the user's ORIGINAL checkout | **read-only** — used only to fetch/verify and to clone/worktree from; never edited |
+| `targetWorktree` | Absolute path to the isolated copy, named `<target repo name> copy for EM` | **where all Builder/Sweeper edits happen**; allowed/forbidden globs are relative to this root |
 
-- **The Steward scopes from here; the Builder executes there.** Scoping
-  reads the real target tree (never guesses globs from convention) and
-  records `preconditions` — which branch to start from, what must have
-  landed first. The Builder verifies preconditions before its first edit
-  and stops if they don't hold.
-- **Omitting `targetRepo` means the work targets AgenticTeam itself** —
-  the only case where globs are relative to this repo.
+Omitting all three means the work targets **AgenticTeam itself** (core-only
+mode); globs are then relative to this repo.
+
+Rules that make this safe:
+
+- **The Steward scopes from here; the Builder executes in the isolated
+  copy.** Scoping reads the real target tree from a fetched remote (never
+  guesses globs from convention) and records `preconditions` and the
+  `validatedAgainst` SHA. The Builder's first act is the six-point
+  isolation verification (constitution: Target isolation) — cwd is
+  `targetWorktree` not `targetCanonical`, the copy is named `<name> copy
+  for EM`, its remote matches, it is on a feature branch (not `main`), the
+  canonical checkout is clean, and AgenticTeam is clean. Any check fails →
+  stop; never fall back to the canonical checkout.
+- **Isolation is enforced mechanically** once the
+  `pretooluse-target-isolation` hook is activated: it denies edits that
+  resolve into a canonical checkout or onto a `main`/`master` branch.
+- **Product changes return only via an in-target PR** — the isolated
+  copy's feature branch → the target repo's own `main`, after explicit
+  human authorization naming owner/repo, PR#, source/target branches, head
+  SHA, and cwd identity.
 
 ## Starting a new workstream from a profile
 
