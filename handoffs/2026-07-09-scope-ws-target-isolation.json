@@ -1,0 +1,114 @@
+{
+  "$comment": "Ratifiable scope contract for the D-Target Isolation Rule. Standalone file by design: handoffs/current-scope.json still holds WS-operations-process-workbench (PR #31 held, awaiting separate merge ruling). This contract is promoted to current-scope.json when the human authorizes the Builder pass. Core-only mode: the work targets AgenticTeam itself, so no profile and no targetRepo apply (per profiles/README.md, omitted targetRepo = AgenticTeam is the target).",
+
+  "profile": null,
+  "workstream": "WS-agenticteam-target-isolation",
+  "objective": "Ratify the D-Target Isolation Rule into AgenticTeam standing law and scope its mechanical implementation: constitution text, role-system precondition, scope-template fields, an inert example hook, and docs. AgenticTeam is the control plane only — nothing from AgenticTeam is ever merged, copied, or injected into ExpertMachina or any other product repo unless the user explicitly scopes that as a product change. Agents operate on external targets only through a dedicated isolated copy of that same target repo.",
+
+  "ratifiedBy": "steward",
+  "ratifiedDate": "2026-07-09",
+  "humanApproval": "RULE RATIFIED by Robert (robertkonecny@gmail.com), 2026-07-09, in session ('RULING: Ratify the D-Target Isolation Rule into a written AgenticTeam scope contract'). BUILDER AUTHORIZATION: PENDING — implementation starts only on a separate explicit go-order.",
+
+  "constitutionalRule": "Target isolation. AgenticTeam is a control plane. It never merges its own files, branches, agents, or governance content into any target product repo. Agents operate on an external target repo only through a dedicated isolated copy of that same target repo, named '<target repo name> copy for EM', on a dedicated feature branch cut from a fetched origin/<default>. The user's canonical target checkout and its main are read-only to agents. Product changes reach the target's main only through a PR inside the same target repo (isolated copy's feature branch -> target main), merged after explicit human authorization. If an isolated copy cannot be created or verified, the workstream does not start — agents never fall back to the canonical checkout.",
+
+  "definitions": {
+    "controlRepo": "AgenticTeam — orchestration, governance, handoffs, gate records. Never a source of product code.",
+    "canonicalTargetRepo": "The user's original checkout of a product repo (e.g. C:/Users/Robert/ExpertMachina). Read-only to agents in every workstream.",
+    "isolatedTargetCopy": "A disposable git worktree or full clone of the SAME target repo, named per the naming convention. The only place Builder/Sweeper/product edits happen.",
+    "productFeatureBranch": "A dedicated branch inside the isolated copy, cut from fetched origin/<default>. Never main/master.",
+    "productPR": "A pull request WITHIN the target repo: product feature branch -> target main. The only path product changes take to main.",
+    "forbiddenCrossRepoMerge": "Any merge, copy, push, or injection of AgenticTeam branches, files, agents, hooks, handoffs, or governance content into a target product repo. Constitutionally forbidden unless the user explicitly scopes it as a product change in a ratified contract."
+  },
+
+  "namingConvention": {
+    "pattern": "<target repo name> copy for EM",
+    "examples": {
+      "ExpertMachina": "ExpertMachina copy for EM",
+      "SoundMachina": "SoundMachina copy for EM",
+      "AgentDeck": "AgentDeck copy for EM"
+    },
+    "location": "Sibling directory of the canonical checkout (e.g. C:/Users/Robert/ExpertMachina copy for EM).",
+    "note": "Path contains spaces — every git/gh invocation must quote it."
+  },
+
+  "preWorkVerification": [
+    "1. cwd is the isolated target copy, NOT the canonical checkout",
+    "2. Directory name matches '<target repo name> copy for EM'",
+    "3. git remote of the copy resolves to the same target repo as the canonical checkout",
+    "4. Checked-out branch is a dedicated feature branch, not main/master",
+    "5. Canonical target checkout is clean and untouched (git status empty)",
+    "6. AgenticTeam repo is clean except authorized handoffs/gate records"
+  ],
+
+  "failureRule": "Any verification check fails -> STOP. Isolated copy missing -> create it (worktree preferred, clone fallback) and re-verify. If it cannot be created or verified, the workstream does not start. NEVER fall back to editing the canonical checkout.",
+
+  "preferredMechanism": {
+    "first": "git worktree add \"../<name> copy for EM\" origin/<default>, then create the feature branch. Cheap, disposable, shares .git, and structurally cannot check out main while the canonical checkout holds it — the mechanical fix for the 2026-07-09 branch-drift incident (gate backlog item 7).",
+    "fallback": "Full clone, when worktrees are unsuitable (submodule-heavy repos, separate filesystem, or user preference for maximum isolation)."
+  },
+
+  "closeoutRule": "Merge authorization must identify, in full: owner/repo, PR number, source branch, target branch, head SHA, and the cwd repo identity the merge command will run from. Ambiguous language ('merge PR #x') is invalid as an authorization. Merges execute only via gh from a verified cwd inside the target repo (or its isolated copy), never from AgenticTeam context without the full identification printed and explicitly approved.",
+
+  "implementationScope": {
+    "allowedGlobs": [
+      "CLAUDE.md",
+      "docs/role-system-v0.1.md",
+      ".claude/agents/builder.md",
+      ".claude/agents/sweeper.md",
+      ".claude/agents/prototyper.md",
+      ".claude/hooks/pretooluse-target-isolation.example.js",
+      ".claude/hooks/README.md",
+      "profiles/README.md",
+      "profiles/TEMPLATE/scope-template.json",
+      "profiles/expertmachina/scope-template.json",
+      "handoffs/*.md",
+      "README.md"
+    ],
+    "forbiddenGlobs": [
+      "C:/Users/Robert/ExpertMachina/**",
+      "<every other product repo — this workstream never touches one>",
+      ".claude/settings.json",
+      ".claude/settings.local.json",
+      "handoffs/2026-07-09-*.md (existing history — append new records only)",
+      "handoffs/current-scope.json (operations contract stays active until PR #31 is ruled on)"
+    ],
+    "expectedFiles": [
+      "CLAUDE.md: add the Target isolation constitutional rule (~12 lines, tightens containment)",
+      "docs/role-system-v0.1.md: Builder §4.2 gains the 6-point pre-work verification; anti-pattern #11 'agent edits the canonical checkout'; version note (v0.1 amendment or v0.2)",
+      ".claude/agents/{builder,sweeper,prototyper}.md: isolation precondition aligned to the doc",
+      ".claude/hooks/pretooluse-target-isolation.example.js: NEW, inert — denies Edit/Write when resolved path is a canonical checkout or branch is main/master; allows correctly-named isolated copies",
+      "profiles/TEMPLATE/scope-template.json + profiles/expertmachina/scope-template.json: add targetCanonical (read-only ref) and targetWorktree (isolated copy path) fields; preconditions gain the verification checklist",
+      "profiles/README.md + .claude/hooks/README.md + README.md: document the rule, naming convention, and activation"
+    ],
+    "proofRequirements": [
+      { "id": "hook-syntax", "command": "node --check .claude/hooks/pretooluse-target-isolation.example.js", "mustShow": "exit 0" },
+      { "id": "hook-deny-canonical", "command": "fixture dry-run piping a synthetic PreToolUse payload (Edit targeting a canonical-checkout path) into the hook", "mustShow": "permissionDecision deny, literal output pasted" },
+      { "id": "hook-deny-main", "command": "fixture dry-run with branch=main in the isolated copy", "mustShow": "permissionDecision deny, literal output pasted" },
+      { "id": "hook-allow-isolated", "command": "fixture dry-run with a correctly-named isolated copy on a feature branch", "mustShow": "allow (no deny decision), literal output pasted" },
+      { "id": "json-valid", "command": "node -e JSON.parse on both scope templates", "mustShow": "both parse" },
+      { "id": "generic", "command": "grep for project names in core files changed", "mustShow": "no product-repo policy leaked into core (naming-convention examples in docs are allowed as examples)" }
+    ],
+    "rollbackPlan": "All changes are governance text plus one inert .example hook — nothing activated, nothing in any product repo. Rollback = single git revert of the implementation commit. Zero runtime blast radius.",
+    "verificationGate": { "type": "adversarial-panel", "verifiers": 3, "passThreshold": 3, "lenses": ["rule-fidelity (contract text vs implemented text)", "genericness (no project leakage into core)", "hook-behavior (deny/allow fixtures reproduced independently)" ] },
+    "downstreamPlan": [
+      { "part": "constitution + role-system + agent files + templates + docs", "agent": "builder (or steward for pure-docs portions)", "model": "sonnet — mechanical doc edits; opus only if hook logic proves non-trivial" },
+      { "part": "example hook + fixtures", "agent": "builder", "model": "sonnet, opus escalation per ruling" },
+      { "part": "gate", "agent": "steward", "model": "fable" }
+    ]
+  },
+
+  "explicitStatements": [
+    "This rule affects FUTURE AgenticTeam workstreams only.",
+    "It does not require merging, modifying, or touching ExpertMachina now — ExpertMachina is not touched by this workstream in any way.",
+    "PR #31 (ExpertMachina feat/operations-process-workbench -> ExpertMachina main) remains HELD until separately ruled on. Nothing in this contract changes its status.",
+    "The Claude Code client's merge-modal wording and repo footer are outside AgenticTeam's control; the closeoutRule above is the enforceable substitute. UI wording is a separate feature request to Claude Code, not part of this scope."
+  ],
+
+  "stopConditions": [
+    "THIS PASS: Steward stops after this contract and its handoff note are written — no implementation until humanApproval's Builder authorization is granted",
+    "Builder (when authorized): stops when all proofs run with literal evidence and the handoff is written; does not activate the hook (ships .example), does not touch settings.json, does not commit without instruction",
+    "Any agent stops immediately if work would touch any product repo"
+  ],
+
+  "nextRecommendedAgent": "human ruling first (authorize Builder pass, and/or promote this contract to current-scope.json); then builder or steward / sonnet per downstreamPlan"
+}

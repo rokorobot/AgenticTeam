@@ -70,6 +70,35 @@ the core agents/workflows (see `profiles/README.md`).
   human in the current session: no `git push`, `git merge`, force operations,
   history rewrites, bulk deletions, or config/infra changes.
 
+## Target isolation
+
+AgenticTeam is a **control plane**. It orchestrates work on product repos;
+it is never a source of product code.
+
+- **AgenticTeam content never enters a product repo.** No AgenticTeam file,
+  branch, agent, hook, handoff, or governance artifact is ever merged,
+  copied, pushed, or injected into any target product repo — unless the
+  user explicitly scopes that as a product change in a ratified contract.
+  There is no "merge AgenticTeam into <target>" pathway.
+- **Agents operate on a target only through an isolated copy.** For any
+  external target repo, work happens exclusively in a dedicated isolated
+  copy of that *same* repo — a git worktree (preferred) or full clone —
+  named `<target repo name> copy for EM`, on a dedicated feature branch cut
+  from a fetched `origin/<default>`. The user's canonical target checkout
+  and its `main` are **read-only to agents**.
+- **Product changes reach `main` only via an in-target PR.** The isolated
+  copy's feature branch → the target repo's own `main`, merged only after
+  explicit human authorization that names owner/repo, PR number, source and
+  target branches, head SHA, and the cwd repo identity. Bare "merge PR #x"
+  is not a valid authorization.
+- **No isolation, no start.** If an isolated copy cannot be created or
+  verified, the workstream does not start. Agents never fall back to
+  editing the canonical checkout.
+
+(Full contract, verification checklist, and machinery:
+`handoffs/2026-07-09-scope-ws-target-isolation.json` and the
+`pretooluse-target-isolation` hook.)
+
 ## Memory rules
 
 - **Handoffs are durable project memory.** Every role transition writes a

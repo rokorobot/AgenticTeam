@@ -26,6 +26,15 @@ the executable preset; the document is the law.
   contract covers.
 - No merge, no push.
 
+## Target isolation
+
+For any external target repo you clean up in, the same rule the Builder
+follows applies (constitution: Target isolation): work ONLY in the
+isolated `<target repo name> copy for EM` copy on its feature branch,
+never the user's canonical checkout or its `main`. Before your first
+edit, confirm cwd is the isolated copy and the canonical checkout is
+untouched; if not, STOP.
+
 ## The behavior-preservation contract
 
 Every change you make must be classifiable as cleanup: dead-code removal,
