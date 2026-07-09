@@ -83,6 +83,37 @@ Example session flow:
   handoffs/current-scope.json.
 ```
 
+## Calibration data (`examples/`)
+
+There are four kinds of content in this system, and they must never blur:
+
+| Kind | Lives in | Authority |
+|---|---|---|
+| Generic core rules | `CLAUDE.md`, `.claude/**` | Law for every project |
+| Profile rules | `profiles/<name>/CLAUDE.profile.md` etc. | Law for one project |
+| Scope contracts | `handoffs/current-scope.json` | Authority for one workstream |
+| Calibration data | `profiles/<name>/examples/**` | **No authority at all** |
+
+`profiles/<name>/examples/` holds example, test, and calibration material —
+real-world shapes from a project used to validate that the profile system
+itself works. It is explicitly **non-canonical, non-production, and never
+evidence by itself**: nothing in `examples/` ratifies a scope, proves a
+claim, satisfies a proof requirement, or becomes a rule. If working with an
+example teaches something durable, the lesson is promoted UP (into the
+profile, or — only if truly universal — the core) and the example stays
+what it is: a specimen.
+
+Rules:
+- No production data, secrets, or real customer/vendor content — synthetic
+  or heavily reduced material only.
+- Every example directory carries a README stating its non-canonical
+  status and what it is meant to calibrate.
+- Agents may READ examples for orientation; no scope contract should ever
+  list `examples/**` as evidence, and the standing `profiles/**` forbidden
+  glob keeps Builders out of them entirely.
+- In-development project material is welcome here precisely BECAUSE it is
+  unstable — that is what makes it good calibration data and bad law.
+
 ## Creating a new profile
 
 Copy `profiles/TEMPLATE/` to `profiles/<name>/` and fill in the marked
