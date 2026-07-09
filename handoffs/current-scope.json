@@ -1,5 +1,7 @@
 {
-  "$comment": "First profile-mode scope contract. Seeded from profiles/expertmachina/scope-template.json, tightened against the ACTUAL ExpertMachina repo layout (inspected 2026-07-09). Globs are relative to targetRepo, not to AgenticTeam. SCOPING-ONLY pass: no Builder work is authorized until a human ratifies this contract.",
+  "$comment": "First profile-mode scope contract. Seeded from profiles/expertmachina/scope-template.json, tightened against the ACTUAL ExpertMachina repo layout (inspected 2026-07-09). Globs are relative to targetRepo, not to AgenticTeam.",
+
+  "status": "SUPERSEDED-BY-EVENTS — Builder authorization WITHDRAWN. Re-validation against ExpertMachina origin/main 5fd448f (2026-07-09) found workbench/finance_cost_leakage/ already shipped via PR #29 (v2.3, commercial verdict passed) with a DIFFERENT skill set. This contract's allowedGlobs now point into a shipped catalog entry, which the profile forbids. The ratification below stands as historical record; no agent may execute this contract. See handoffs/2026-07-09-ws-finance-cost-leakage-revalidation.md for the finding and options.",
 
   "profile": "expertmachina",
   "workstream": "WS-finance-cost-leakage-workbench",
