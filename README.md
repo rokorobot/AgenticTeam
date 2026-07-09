@@ -17,7 +17,8 @@ from most to least stable:
 | Layer | Location | Holds |
 |---|---|---|
 | Core constitution | `CLAUDE.md` | Universal rules for every agent, every project |
-| Core agents | `.claude/agents/` | The six role presets and their tool grants |
+| Role system | `docs/role-system-v0.1.md` | Canonical contracts for the six roles: authority levels, lifecycle, handoffs, anti-patterns |
+| Core agents | `.claude/agents/` | The six role presets and their tool grants (executable form of the role system) |
 | Core workflows | `.claude/workflows/` | Generic pipelines (feature, explore, release-audit) |
 | Project profiles | `profiles/<name>/` | Per-project governance, terminology, risks, extra workflows |
 | Scope contracts | `handoffs/current-scope.json` | Per-workstream authority, globs, proofs, gate |
@@ -59,6 +60,9 @@ ordering (never Builder before Steward) is the pipeline's first invariant.
 
 ```
 CLAUDE.md                      Constitution — loaded by every agent; wins over task prompts
+docs/
+  role-system-v0.1.md          Role System v0.1 — canonical six-role contracts (authority levels,
+                               lifecycle, handoffs, anti-patterns); agent files are its executable presets
 README.md                      This file
 .claude/
   agents/
